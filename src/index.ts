@@ -1,21 +1,28 @@
 /**
- * LLM Chat Application Template
+ * GT — AI Chat Application
  *
- * A simple chat application using Cloudflare Workers AI.
- * This template demonstrates how to implement an LLM-powered chat interface with
- * streaming responses using Server-Sent Events (SSE).
+ * A professional AI chat application using Cloudflare Workers AI.
+ * Supports multiple models, streaming responses via SSE, and dynamic model switching.
  *
  * @license MIT
  */
 import { Env, ChatMessage } from "./types";
 
-// Model ID for Workers AI model
-// https://developers.cloudflare.com/workers-ai/models/
-const MODEL_ID = "@cf/meta/llama-3.1-8b-instruct-fp8";
+// Default Model ID
+const DEFAULT_MODEL_ID = "@cf/meta/llama-3.1-8b-instruct-fp8";
+
+// Allowed models (must match frontend select options)
+const ALLOWED_MODELS: string[] = [
+	"@cf/meta/llama-3.1-8b-instruct-fp8",
+	"@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+	"@cf/deepseek-ai/deepseek-r1-distill-qwen-32b",
+	"@cf/qwen/qwen2.5-coder-32b-instruct",
+	"@cf/google/gemma-7b-it-lora",
+];
 
 // Default system prompt
 const SYSTEM_PROMPT =
-	"You are a helpful, friendly assistant. Provide concise and accurate responses.";
+	"You are GT, a helpful and knowledgeable AI assistant. Provide clear, accurate, and well-structured responses. When writing code, always include comments and use proper formatting.";
 
 export default {
 	/**
@@ -33,14 +40,23 @@ export default {
 			return env.ASSETS.fetch(request);
 		}
 
+		// CORS headers for API routes
+		const corsHeaders = {
+			"Access-Control-Allow-Origin": "*",
+			"Access-Control-Allow-Methods": "POST, OPTIONS",
+			"Access-Control-Allow-Headers": "Content-Type",
+		};
+
+		// Handle preflight
+		if (request.method === "OPTIONS") {
+			return new Response(null, { headers: corsHeaders });
+		}
+
 		// API Routes
 		if (url.pathname === "/api/chat") {
-			// Handle POST requests for chat
 			if (request.method === "POST") {
 				return handleChatRequest(request, env);
 			}
-
-			// Method not allowed for other request types
 			return new Response("Method not allowed", { status: 405 });
 		}
 
@@ -50,17 +66,25 @@ export default {
 } satisfies ExportedHandler<Env>;
 
 /**
- * Handles chat API requests
+ * Handles chat API requests with dynamic model selection
  */
 async function handleChatRequest(
 	request: Request,
 	env: Env,
 ): Promise<Response> {
 	try {
-		// Parse JSON request body
-		const { messages = [] } = (await request.json()) as {
+		const body = (await request.json()) as {
 			messages: ChatMessage[];
+			model?: string;
 		};
+
+		const { messages = [], model } = body;
+
+		// Determine which model to use
+		let modelId = DEFAULT_MODEL_ID;
+		if (model && ALLOWED_MODELS.includes(model)) {
+			modelId = model;
+		}
 
 		// Add system prompt if not present
 		if (!messages.some((msg) => msg.role === "system")) {
@@ -68,23 +92,23 @@ async function handleChatRequest(
 		}
 
 		const stream = await env.AI.run(
-			MODEL_ID,
+			modelId as Parameters<typeof env.AI.run>[0],
 			{
 				messages,
-				max_tokens: 1024,
+				max_tokens: 2048,
 				stream: true,
 			},
 			{
 				// Uncomment to use AI Gateway
 				// gateway: {
-				//   id: "YOUR_GATEWAY_ID", // Replace with your AI Gateway ID
-				//   skipCache: false,      // Set to true to bypass cache
-				//   cacheTtl: 3600,        // Cache time-to-live in seconds
+				//   id: "YOUR_GATEWAY_ID",
+				//   skipCache: false,
+				//   cacheTtl: 3600,
 				// },
 			},
 		);
 
-		return new Response(stream, {
+		return new Response(stream as ReadableStream, {
 			headers: {
 				"content-type": "text/event-stream; charset=utf-8",
 				"cache-control": "no-cache",
