@@ -7,10 +7,13 @@
 	"name": "llm-chat-app-template",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-10-08",
-	"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+	"compatibility_flags": [
+		"nodejs_compat",
+		"global_fetch_strictly_public"
+	],
 	"assets": {
 		"binding": "ASSETS",
-		"directory": "./public"
+		"directory": "./dist"
 	},
 	"observability": {
 		"enabled": true
@@ -18,5 +21,18 @@
 	"ai": {
 		"binding": "AI"
 	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "gt-ai-db",
+			"database_id": "4b02432f-394d-4f33-a074-2bbbb1327194"
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "BUCKET",
+			"bucket_name": "gt-ai-storage"
+		}
+	],
 	"upload_source_maps": true
 }

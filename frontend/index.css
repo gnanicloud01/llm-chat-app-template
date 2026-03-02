@@ -1,22 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>GT — AI Assistant</title>
-	<meta name="description"
-		content="GT is a powerful AI assistant powered by advanced language models. Chat, code, analyze, and create." />
-	<link rel="preconnect" href="https://fonts.googleapis.com" />
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-	<link
-		href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-		rel="stylesheet" />
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" />
-	<link rel="stylesheet" href="enhanced-styles.css" />
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.1/marked.min.js"></script>
-	<style>
 		/* ===== Reset & Base ===== */
 		*,
 		*::before,
@@ -285,6 +266,75 @@
 		.sidebar-footer {
 			padding: 12px 16px;
 			border-top: 1px solid var(--border-color);
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+		}
+
+		/* User Profile */
+		.user-profile {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			padding: 12px;
+			background: var(--bg-tertiary);
+			border-radius: var(--radius-sm);
+			margin-bottom: 8px;
+		}
+
+		.user-avatar {
+			width: 40px;
+			height: 40px;
+			min-width: 40px;
+			border-radius: 50%;
+			overflow: hidden;
+			background: var(--bg-hover);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.user-avatar img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		.user-avatar-placeholder {
+			width: 100%;
+			height: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: var(--accent);
+			color: white;
+			font-size: 16px;
+			font-weight: 600;
+		}
+
+		.user-info {
+			flex: 1;
+			min-width: 0;
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+		}
+
+		.user-name {
+			font-size: 14px;
+			font-weight: 600;
+			color: var(--text-primary);
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.user-email {
+			font-size: 12px;
+			color: var(--text-tertiary);
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 
 		.sidebar-footer-btn {
@@ -630,6 +680,44 @@
 			font-weight: 600;
 			margin-bottom: 8px;
 			color: var(--text-primary);
+		}
+
+		.thinking-indicator {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			padding: 8px 12px;
+			background: var(--bg-tertiary);
+			border-radius: var(--radius-sm);
+			margin-bottom: 12px;
+			font-size: 14px;
+			color: var(--text-secondary);
+		}
+
+		.thinking-icon {
+			font-size: 16px;
+			animation: thinking-pulse 1.5s ease-in-out infinite;
+		}
+
+		@keyframes thinking-pulse {
+			0%, 100% { opacity: 1; transform: scale(1); }
+			50% { opacity: 0.6; transform: scale(1.1); }
+		}
+
+		.thinking-dots {
+			animation: thinking-dots 1.5s steps(4, end) infinite;
+		}
+
+		@keyframes thinking-dots {
+			0%, 20% { content: '.'; }
+			40% { content: '..'; }
+			60%, 100% { content: '...'; }
+		}
+
+		.thinking-time {
+			font-weight: 600;
+			color: var(--accent);
+			margin-left: 4px;
 		}
 
 		.message-content {
@@ -1739,342 +1827,3 @@
 			display: block;
 			animation: authFadeIn 0.3s ease-out;
 		}
-	</style>
-
-</head>
-
-<body>
-	<div class="app">
-		<!-- Sidebar Overlay -->
-		<div class="sidebar-overlay" id="sidebar-overlay"></div>
-
-		<!-- Sidebar -->
-		<aside class="sidebar" id="sidebar">
-			<div class="sidebar-header">
-				<div class="brand">
-					<div class="brand-logo">GT</div>
-					<span class="brand-name">GT</span>
-				</div>
-				<button class="new-chat-btn" id="new-chat-btn">
-					<svg viewBox="0 0 24 24">
-						<line x1="12" y1="5" x2="12" y2="19" />
-						<line x1="5" y1="12" x2="19" y2="12" />
-					</svg>
-					New Chat
-				</button>
-			</div>
-
-			<div class="sidebar-search">
-				<div class="sidebar-search-wrapper">
-					<svg viewBox="0 0 24 24">
-						<circle cx="11" cy="11" r="8" />
-						<line x1="21" y1="21" x2="16.65" y2="16.65" />
-					</svg>
-					<input type="text" id="search-input" placeholder="Search conversations..." />
-				</div>
-			</div>
-
-			<div class="conversation-list" id="conversation-list">
-				<div class="no-conversations" id="no-conversations">No conversations yet</div>
-			</div>
-
-			<div class="sidebar-footer">
-
-				<button class="sidebar-footer-btn" id="clear-all-btn">
-					<svg viewBox="0 0 24 24">
-						<polyline points="3 6 5 6 21 6" />
-						<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-					</svg>
-					Clear all conversations
-				</button>
-			</div>
-			<div class="logout-btn-wrapper">
-				<button class="logout-btn" id="logout-btn">
-					<svg viewBox="0 0 24 24">
-						<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-						<polyline points="16 17 21 12 16 7" />
-						<line x1="21" y1="12" x2="9" y2="12" />
-					</svg>
-					Log out
-				</button>
-			</div>
-		</aside>
-
-		<!-- Main Content -->
-		<main class="main-content" id="main-content">
-			<!-- Header -->
-			<header class="chat-header">
-				<button class="menu-toggle" id="menu-toggle">
-					<svg viewBox="0 0 24 24">
-						<line x1="3" y1="6" x2="21" y2="6" />
-						<line x1="3" y1="12" x2="21" y2="12" />
-						<line x1="3" y1="18" x2="21" y2="18" />
-					</svg>
-				</button>
-				<div class="model-selector">
-					<select id="model-select">
-						<option value="@cf/meta/llama-3.1-8b-instruct-fp8">Llama 3.1 8B</option>
-						<option value="@cf/meta/llama-3.3-70b-instruct-fp8-fast">Llama 3.3 70B</option>
-						<option value="@cf/deepseek-ai/deepseek-r1-distill-qwen-32b">DeepSeek R1 32B</option>
-						<option value="@cf/qwen/qwen2.5-coder-32b-instruct">Qwen 2.5 Coder 32B</option>
-						<option value="@cf/google/gemma-7b-it-lora">Gemma 7B</option>
-					</select>
-				</div>
-				<div class="header-title" id="header-title"></div>
-				<div class="header-actions">
-					<button class="header-action-btn" id="export-btn" title="Export conversation">
-						<svg viewBox="0 0 24 24">
-							<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-							<polyline points="7 10 12 15 17 10" />
-							<line x1="12" y1="15" x2="12" y2="3" />
-						</svg>
-					</button>
-				</div>
-			</header>
-
-			<!-- Welcome Screen -->
-			<div class="welcome-screen" id="welcome-screen">
-				<div class="welcome-logo">GT</div>
-				<h1 class="welcome-title">How can I help you today?</h1>
-				<p class="welcome-subtitle">I can help you write code, analyze data, draft content, explain concepts,
-					and much more.</p>
-				<div class="suggestion-cards">
-					<button class="suggestion-card"
-						data-prompt="Write a Python script that fetches data from a REST API with error handling">
-						<div class="suggestion-card-icon">
-							<svg viewBox="0 0 24 24">
-								<polyline points="16 18 22 12 16 6" />
-								<polyline points="8 6 2 12 8 18" />
-							</svg>
-						</div>
-						<span class="suggestion-card-title">Write code</span>
-						<span class="suggestion-card-desc">Generate code for any project</span>
-					</button>
-					<button class="suggestion-card"
-						data-prompt="Analyze the pros and cons of using microservices vs monolithic architecture">
-						<div class="suggestion-card-icon">
-							<svg viewBox="0 0 24 24">
-								<line x1="18" y1="20" x2="18" y2="10" />
-								<line x1="12" y1="20" x2="12" y2="4" />
-								<line x1="6" y1="20" x2="6" y2="14" />
-							</svg>
-						</div>
-						<span class="suggestion-card-title">Analyze data</span>
-						<span class="suggestion-card-desc">Break down complex information</span>
-					</button>
-					<button class="suggestion-card"
-						data-prompt="Draft a professional email to a client about a project timeline update">
-						<div class="suggestion-card-icon">
-							<svg viewBox="0 0 24 24">
-								<path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-							</svg>
-						</div>
-						<span class="suggestion-card-title">Draft content</span>
-						<span class="suggestion-card-desc">Write emails, essays, and more</span>
-					</button>
-					<button class="suggestion-card"
-						data-prompt="Explain how neural networks work in simple terms with analogies">
-						<div class="suggestion-card-icon">
-							<svg viewBox="0 0 24 24">
-								<circle cx="12" cy="12" r="10" />
-								<line x1="12" y1="16" x2="12" y2="12" />
-								<line x1="12" y1="8" x2="12.01" y2="8" />
-							</svg>
-						</div>
-						<span class="suggestion-card-title">Explain concepts</span>
-						<span class="suggestion-card-desc">Understand any topic easily</span>
-					</button>
-				</div>
-			</div>
-
-			<!-- Chat Messages -->
-			<div class="chat-messages" id="chat-messages" style="display: none;"></div>
-
-			<!-- Typing Indicator -->
-			<div class="typing-indicator" id="typing-indicator">
-				<div class="message-avatar ai-avatar"
-					style="background:var(--accent);color:white;width:32px;height:32px;min-width:32px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;">
-					GT</div>
-				<div>
-					<div class="message-role">GT</div>
-					<div class="typing-dots">
-						<span></span><span></span><span></span>
-					</div>
-				</div>
-			</div>
-
-			<!-- Drop Overlay -->
-			<div class="drop-overlay" id="drop-overlay">
-				<div class="drop-overlay-icon">
-					<svg viewBox="0 0 24 24">
-						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-						<polyline points="17 8 12 3 7 8" />
-						<line x1="12" y1="3" x2="12" y2="15" />
-					</svg>
-				</div>
-				<div class="drop-overlay-text">Drop files here</div>
-				<div class="drop-overlay-hint">Images, text files, code, documents</div>
-			</div>
-
-			<!-- Image Lightbox -->
-			<div class="lightbox" id="lightbox">
-				<img id="lightbox-img" src="" alt="Preview" />
-			</div>
-
-			<!-- Input Area -->
-			<div class="input-area">
-				<input type="file" id="file-input" multiple
-					accept="image/*,.txt,.md,.csv,.json,.js,.ts,.py,.html,.css,.xml,.yaml,.yml,.log,.sh,.bash,.c,.cpp,.h,.java,.rb,.go,.rs,.sql,.env,.toml,.ini,.cfg,.pdf,.doc,.docx"
-					hidden />
-				<div class="input-wrapper">
-					<div class="attachment-previews" id="attachment-previews"></div>
-					<div class="input-container" id="input-container">
-						<button class="attach-btn" id="attach-btn" title="Attach files">
-							<svg viewBox="0 0 24 24">
-								<path
-									d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
-							</svg>
-						</button>
-						<button class="web-search-btn" id="web-search-btn" title="Enable Web Search">
-							<svg viewBox="0 0 24 24">
-								<circle cx="12" cy="12" r="10" />
-								<line x1="2" y1="12" x2="22" y2="12" />
-								<path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-							</svg>
-							<span class="web-search-label">Web</span>
-						</button>
-						<textarea id="user-input" placeholder="Message GT..." rows="1" autofocus></textarea>
-						<button class="send-btn" id="send-button" disabled>
-							<svg viewBox="0 0 24 24">
-								<path d="M22 2L11 13" />
-								<path d="M22 2L15 22L11 13L2 9L22 2Z" />
-							</svg>
-						</button>
-					</div>
-				</div>
-				<p class="input-hint">GT can make mistakes. Consider checking important information.</p>
-			</div>
-		</main>
-	</div>
-
-
-	<!-- Auth Overlay -->
-	<div class="auth-overlay" id="auth-overlay">
-		<div class="auth-card">
-			<!-- Login View -->
-			<div id="login-view" class="active">
-				<div class="auth-header">
-					<div class="auth-logo">GT</div>
-					<h2 class="auth-title">Welcome back</h2>
-					<p class="auth-subtitle">Sign in to your AI chat experience</p>
-				</div>
-				<form class="auth-form" id="login-form">
-					<div class="form-group">
-						<label>Email</label>
-						<div class="input-with-icon">
-							<svg viewBox="0 0 24 24">
-								<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-								<polyline points="22,6 12,13 2,6" />
-							</svg>
-							<input type="email" class="auth-input" placeholder="email@example.com" required />
-						</div>
-					</div>
-					<div class="form-group">
-						<label>Password</label>
-						<div class="input-with-icon">
-							<svg viewBox="0 0 24 24">
-								<rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-								<path d="M7 11V7a5 5 0 0 1 10 0v4" />
-							</svg>
-							<input type="password" class="auth-input" placeholder="••••••••" required />
-						</div>
-					</div>
-					<button type="submit" class="auth-btn">Sign In</button>
-					<div style="text-align:center; color:rgba(255,255,255,0.5); margin:4px 0;">or</div>
-					<button type="button" class="auth-btn google-btn" id="google-login-btn"
-						style="background:white; color:var(--text-primary); display:flex; align-items:center; justify-content:center; gap:8px;">
-						<svg width="18" height="18" viewBox="0 0 24 24">
-							<path fill="#EA4335"
-								d="M5.26498 9.76453A8.95909 8.95909 0 0 0 5.09695 12c0 .77382.10018 1.52345.28913 2.23547l-4.13054 3.20364C.45036 15.6583 0 13.8856 0 12c0-1.8856.45036-3.6583 1.25554-5.43911l4.00944 3.20364Z" />
-							<path fill="#34A853"
-								d="M12 24c3.24 0 5.9508-1.08 7.9333-2.9092l-4.2272-3.2774C14.6293 18.5303 13.4187 19 12 19c-3.1417 0-5.8078-2.1268-6.7594-4.991l-4.1352 3.2081C3.1539 21.3653 7.1585 24 12 24Z" />
-							<path fill="#4A90E2"
-								d="M23.6358 12.2727c0-.8182-.0732-1.6046-.2106-2.3636H12v4.4727h6.525c-.2822 1.4429-1.0766 2.664-2.2963 3.4912l4.2272 3.2774C22.9272 18.8682 23.6358 15.8236 23.6358 12.2727Z" />
-							<path fill="#FBBC05"
-								d="M12 5c1.7618 0 3.3444.606 4.5885 1.791l3.4398-3.4398C17.942.3927 15.2345 0 12 0 7.1585 0 3.1539 2.6347 1.0555 6.5609l4.0094 3.2036C6.0145 6.9419 8.8052 5 12 5Z" />
-						</svg>
-						Continue with Google
-					</button>
-				</form>
-				<div class="auth-footer">
-					New to GT? <a href="#" class="auth-link" id="show-signup">Create an account</a>
-				</div>
-			</div>
-
-			<!-- Signup View -->
-			<div id="signup-view">
-				<div class="auth-header">
-					<div class="auth-logo">GT</div>
-					<h2 class="auth-title">Create Account</h2>
-					<p class="auth-subtitle">Start your journey with GT Assistant</p>
-				</div>
-				<form class="auth-form" id="signup-form">
-					<div class="form-group">
-						<label>Name</label>
-						<div class="input-with-icon">
-							<svg viewBox="0 0 24 24">
-								<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-								<circle cx="12" cy="7" r="4" />
-							</svg>
-							<input type="text" class="auth-input" placeholder="Your Name" required />
-						</div>
-					</div>
-					<div class="form-group">
-						<label>Email</label>
-						<div class="input-with-icon">
-							<svg viewBox="0 0 24 24">
-								<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-								<polyline points="22,6 12,13 2,6" />
-							</svg>
-							<input type="email" class="auth-input" placeholder="email@example.com" required />
-						</div>
-					</div>
-					<div class="form-group">
-						<label>Password</label>
-						<div class="input-with-icon">
-							<svg viewBox="0 0 24 24">
-								<rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-								<path d="M7 11V7a5 5 0 0 1 10 0v4" />
-							</svg>
-							<input type="password" class="auth-input" placeholder="••••••••" required />
-						</div>
-					</div>
-					<button type="submit" class="auth-btn">Sign Up</button>
-					<div style="text-align:center; color:rgba(255,255,255,0.5); margin:4px 0;">or</div>
-					<button type="button" class="auth-btn google-btn" id="google-signup-btn"
-						style="background:white; color:var(--text-primary); display:flex; align-items:center; justify-content:center; gap:8px;">
-						<svg width="18" height="18" viewBox="0 0 24 24">
-							<path fill="#EA4335"
-								d="M5.26498 9.76453A8.95909 8.95909 0 0 0 5.09695 12c0 .77382.10018 1.52345.28913 2.23547l-4.13054 3.20364C.45036 15.6583 0 13.8856 0 12c0-1.8856.45036-3.6583 1.25554-5.43911l4.00944 3.20364Z" />
-							<path fill="#34A853"
-								d="M12 24c3.24 0 5.9508-1.08 7.9333-2.9092l-4.2272-3.2774C14.6293 18.5303 13.4187 19 12 19c-3.1417 0-5.8078-2.1268-6.7594-4.991l-4.1352 3.2081C3.1539 21.3653 7.1585 24 12 24Z" />
-							<path fill="#4A90E2"
-								d="M23.6358 12.2727c0-.8182-.0732-1.6046-.2106-2.3636H12v4.4727h6.525c-.2822 1.4429-1.0766 2.664-2.2963 3.4912l4.2272 3.2774C22.9272 18.8682 23.6358 15.8236 23.6358 12.2727Z" />
-							<path fill="#FBBC05"
-								d="M12 5c1.7618 0 3.3444.606 4.5885 1.791l3.4398-3.4398C17.942.3927 15.2345 0 12 0 7.1585 0 3.1539 2.6347 1.0555 6.5609l4.0094 3.2036C6.0145 6.9419 8.8052 5 12 5Z" />
-						</svg>
-						Continue with Google
-					</button>
-				</form>
-				<div class="auth-footer">
-					Already have an account? <a href="#" class="auth-link" id="show-login">Sign In</a>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<script type="module" src="chat.js"></script>
-
-</body>
-
-</html>

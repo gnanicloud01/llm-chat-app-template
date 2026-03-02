@@ -1,0 +1,521 @@
+/* ===== ENHANCED VISUAL STYLES FOR GT - ChatGPT-like Presentation ===== */
+
+/* Enhanced List Styling - More Visual Impact */
+.message-content ul {
+	list-style: none;
+	margin: 16px 0;
+	padding: 0;
+}
+
+.message-content ul li {
+	margin-bottom: 20px;
+	padding-left: 28px;
+	position: relative;
+	line-height: 1.8;
+}
+
+.message-content ul li::before {
+	content: "▸";
+	position: absolute;
+	left: 0;
+	color: var(--accent);
+	font-weight: bold;
+	font-size: 18px;
+	top: -2px;
+}
+
+/* Enhanced Headlines in Lists */
+.message-content ul li strong:first-child {
+	display: block;
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--text-primary);
+	margin-bottom: 4px;
+	line-height: 1.4;
+}
+
+/* Better Emoji Rendering */
+.message-content {
+	font-feature-settings: "liga" 1, "calt" 1;
+}
+
+/* Emoji in headers should be larger */
+.message-content h1,
+.message-content h2,
+.message-content h3 {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+/* Enhanced Section Headers */
+.message-content h2 {
+	font-size: 19px;
+	font-weight: 600;
+	margin: 32px 0 20px 0;
+	padding-bottom: 12px;
+	border-bottom: 2px solid var(--border-light);
+	color: var(--text-primary);
+	letter-spacing: -0.02em;
+}
+
+.message-content h2:first-child {
+	margin-top: 12px;
+}
+
+.message-content h3 {
+	font-size: 17px;
+	font-weight: 600;
+	margin: 24px 0 16px 0;
+	color: var(--text-primary);
+}
+
+/* Enhanced Opening Paragraph */
+.message-content > p:first-child {
+	font-size: 16px;
+	font-weight: 500;
+	color: var(--text-primary);
+	margin-bottom: 28px;
+	padding-bottom: 20px;
+	border-bottom: 1px solid var(--border-light);
+	line-height: 1.7;
+}
+
+/* Better Spacing for Content Sections */
+.message-content > * + * {
+	margin-top: 16px;
+}
+
+.message-content > h2 + * {
+	margin-top: 16px;
+}
+
+/* Enhanced Numbered Lists */
+.message-content ol {
+	margin: 16px 0 16px 24px;
+	padding-left: 8px;
+}
+
+.message-content ol li {
+	margin-bottom: 16px;
+	padding-left: 12px;
+	line-height: 1.8;
+}
+
+.message-content ol li::marker {
+	font-weight: 600;
+	color: var(--accent);
+}
+
+/* Enhanced Links */
+.message-content a {
+	color: #0066cc;
+	text-decoration: none;
+	border-bottom: 1px solid transparent;
+	transition: all 0.2s ease;
+	font-weight: 500;
+}
+
+.message-content a:hover {
+	border-bottom-color: #0066cc;
+	color: #0052a3;
+}
+
+/* Better Blockquote Styling */
+.message-content blockquote {
+	border-left: 4px solid var(--accent);
+	padding: 16px 24px;
+	margin: 20px 0;
+	background: var(--bg-tertiary);
+	border-radius: 0 var(--radius-md) var(--radius-md) 0;
+	color: var(--text-secondary);
+	font-style: italic;
+}
+
+.message-content blockquote p {
+	margin: 0;
+}
+
+/* Enhanced Tables */
+.message-content table {
+	border-collapse: separate;
+	border-spacing: 0;
+	width: 100%;
+	margin: 20px 0;
+	font-size: 14px;
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-md);
+	overflow: hidden;
+	box-shadow: var(--shadow-sm);
+}
+
+.message-content th {
+	background: var(--bg-tertiary);
+	font-weight: 600;
+	color: var(--text-primary);
+	padding: 14px 18px;
+	text-align: left;
+	border-bottom: 2px solid var(--border-color);
+}
+
+.message-content td {
+	padding: 14px 18px;
+	border-bottom: 1px solid var(--border-light);
+}
+
+.message-content tr:last-child td {
+	border-bottom: none;
+}
+
+.message-content tr:hover {
+	background: var(--bg-hover);
+}
+
+/* Inline Code Enhancement */
+.message-content code:not(pre code) {
+	background: rgba(175, 184, 193, 0.2);
+	padding: 3px 7px;
+	border-radius: 5px;
+	font-family: 'JetBrains Mono', 'Courier New', monospace;
+	font-size: 13.5px;
+	color: #eb5757;
+	font-weight: 500;
+	border: 1px solid rgba(175, 184, 193, 0.3);
+}
+
+/* Horizontal Rules */
+.message-content hr {
+	border: none;
+	border-top: 2px solid var(--border-light);
+	margin: 32px 0;
+}
+
+/* Better Paragraph Spacing */
+.message-content p {
+	margin-bottom: 16px;
+	line-height: 1.75;
+}
+
+.message-content p:last-child {
+	margin-bottom: 0;
+}
+
+/* Enhanced Strong/Bold Text */
+.message-content strong {
+	font-weight: 600;
+	color: var(--text-primary);
+}
+
+/* Enhanced Italic Text */
+.message-content em {
+	font-style: italic;
+	color: var(--text-secondary);
+}
+
+/* Movie/Content Card Styling (when AI uses special format) */
+.message-content .content-card {
+	background: var(--bg-secondary);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-md);
+	padding: 20px;
+	margin: 16px 0;
+	box-shadow: var(--shadow-sm);
+	transition: all 0.2s ease;
+}
+
+.message-content .content-card:hover {
+	box-shadow: var(--shadow-md);
+	transform: translateY(-2px);
+}
+
+/* Grid Layout for Cards */
+.message-content .card-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+	gap: 16px;
+	margin: 20px 0;
+}
+
+/* Image Gallery Enhancement */
+.message-content img {
+	max-width: 100%;
+	height: auto;
+	border-radius: var(--radius-md);
+	margin: 16px 0;
+	box-shadow: var(--shadow-sm);
+	transition: transform 0.2s ease;
+}
+
+.message-content img:hover {
+	transform: scale(1.02);
+	box-shadow: var(--shadow-md);
+}
+
+/* Multiple images in a row */
+.message-content p img + img {
+	margin-left: 12px;
+}
+
+/* Badge/Tag Styling */
+.message-content .badge,
+.message-content .tag {
+	display: inline-block;
+	padding: 4px 10px;
+	background: var(--bg-tertiary);
+	border: 1px solid var(--border-color);
+	border-radius: 12px;
+	font-size: 12px;
+	font-weight: 500;
+	color: var(--text-secondary);
+	margin: 0 4px 4px 0;
+}
+
+/* Highlight Box */
+.message-content .highlight-box {
+	background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+	border-left: 4px solid #6366f1;
+	padding: 16px 20px;
+	margin: 20px 0;
+	border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+/* Info Box */
+.message-content .info-box {
+	background: rgba(59, 130, 246, 0.1);
+	border-left: 4px solid #3b82f6;
+	padding: 16px 20px;
+	margin: 20px 0;
+	border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+/* Warning Box */
+.message-content .warning-box {
+	background: rgba(245, 158, 11, 0.1);
+	border-left: 4px solid #f59e0b;
+	padding: 16px 20px;
+	margin: 20px 0;
+	border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+/* Success Box */
+.message-content .success-box {
+	background: rgba(16, 185, 129, 0.1);
+	border-left: 4px solid #10b981;
+	padding: 16px 20px;
+	margin: 20px 0;
+	border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+/* Collapsible Section (for future enhancement) */
+.message-content details {
+	background: var(--bg-secondary);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-md);
+	padding: 16px;
+	margin: 16px 0;
+}
+
+.message-content details summary {
+	cursor: pointer;
+	font-weight: 600;
+	color: var(--text-primary);
+	user-select: none;
+	list-style: none;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.message-content details summary::-webkit-details-marker {
+	display: none;
+}
+
+.message-content details summary::before {
+	content: "▸";
+	font-size: 14px;
+	transition: transform 0.2s ease;
+}
+
+.message-content details[open] summary::before {
+	transform: rotate(90deg);
+}
+
+.message-content details[open] {
+	padding-bottom: 20px;
+}
+
+/* Better Definition Lists */
+.message-content dl {
+	margin: 16px 0;
+}
+
+.message-content dt {
+	font-weight: 600;
+	color: var(--text-primary);
+	margin-top: 16px;
+	margin-bottom: 4px;
+}
+
+.message-content dd {
+	margin-left: 24px;
+	color: var(--text-secondary);
+	line-height: 1.7;
+}
+
+/* Keyboard Key Styling */
+.message-content kbd {
+	background: var(--bg-tertiary);
+	border: 1px solid var(--border-color);
+	border-radius: 4px;
+	padding: 2px 6px;
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 12px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Subscript and Superscript */
+.message-content sub,
+.message-content sup {
+	font-size: 0.75em;
+	line-height: 0;
+	position: relative;
+	vertical-align: baseline;
+}
+
+.message-content sup {
+	top: -0.5em;
+}
+
+.message-content sub {
+	bottom: -0.25em;
+}
+
+/* Better Preformatted Text (non-code) */
+.message-content pre:not(:has(code)) {
+	background: var(--bg-tertiary);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-md);
+	padding: 16px;
+	overflow-x: auto;
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 13px;
+	line-height: 1.6;
+}
+
+/* Abbreviation Styling */
+.message-content abbr {
+	text-decoration: underline dotted;
+	cursor: help;
+}
+
+/* Mark/Highlight Text */
+.message-content mark {
+	background: rgba(250, 204, 21, 0.3);
+	padding: 2px 4px;
+	border-radius: 3px;
+	color: var(--text-primary);
+}
+
+/* Better Nested Lists */
+.message-content ul ul,
+.message-content ol ul,
+.message-content ul ol,
+.message-content ol ol {
+	margin-top: 8px;
+	margin-bottom: 8px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+	.message-content h2 {
+		font-size: 17px;
+	}
+
+	.message-content h3 {
+		font-size: 15px;
+	}
+
+	.message-content ul li {
+		padding-left: 24px;
+	}
+
+	.message-content .card-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.message-content table {
+		font-size: 13px;
+	}
+
+	.message-content th,
+	.message-content td {
+		padding: 10px 12px;
+	}
+}
+
+/* Print Styles */
+@media print {
+	.message-content {
+		color: #000;
+	}
+
+	.message-content a {
+		color: #0066cc;
+		text-decoration: underline;
+	}
+
+	.message-content code:not(pre code) {
+		background: #f0f0f0;
+		color: #000;
+	}
+}
+
+/* Thinking Indicator Styles */
+.thinking-indicator {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 12px 16px;
+	background: rgba(99, 102, 241, 0.1);
+	border-left: 3px solid #6366f1;
+	border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+	margin-bottom: 12px;
+	font-size: 14px;
+	color: var(--text-secondary);
+}
+
+.thinking-icon {
+	font-size: 18px;
+	animation: thinkingPulse 1.5s ease-in-out infinite;
+}
+
+.thinking-dots {
+	display: inline-block;
+	animation: thinkingDots 1.5s steps(4) infinite;
+}
+
+.thinking-time {
+	margin-left: auto;
+	font-weight: 500;
+	color: #6366f1;
+	font-variant-numeric: tabular-nums;
+}
+
+@keyframes thinkingPulse {
+	0%, 100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+	50% {
+		opacity: 0.7;
+		transform: scale(1.1);
+	}
+}
+
+@keyframes thinkingDots {
+	0% { content: ""; }
+	25% { content: "."; }
+	50% { content: ".."; }
+	75% { content: "..."; }
+	100% { content: ""; }
+}

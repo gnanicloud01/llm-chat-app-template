@@ -38,6 +38,7 @@ const DOM = {
 	typingIndicator: document.getElementById('typing-indicator'),
 	userInput: document.getElementById('user-input'),
 	sendButton: document.getElementById('send-button'),
+	stopButton: document.getElementById('stop-button'),
 	webSearchBtn: document.getElementById('web-search-btn'),
 	modelSelect: document.getElementById('model-select'),
 	headerTitle: document.getElementById('header-title'),
@@ -67,6 +68,7 @@ let isProcessing = false;
 let isAuthenticated = false;
 let webSearchEnabled = false;
 let isSearching = false;
+let currentAbortController = null; // For stopping AI responses
 
 // ============================================================
 // Markdown Configuration
@@ -443,6 +445,11 @@ function createStreamingMessage() {
     <div class="message-avatar" style="background:var(--accent);color:white;">GT</div>
     <div class="message-body">
       <div class="message-role">GT</div>
+      <div class="thinking-indicator" style="display:none;">
+        <span class="thinking-icon">🤔</span> 
+        <span>Thinking<span class="thinking-dots">...</span></span>
+        <span class="thinking-time">0s</span>
+      </div>
       <div class="message-content"></div>
       <div class="message-actions">
         <button class="msg-action-btn copy-msg-btn" title="Copy">
@@ -500,8 +507,13 @@ async function sendMessage(messageText) {
 	isProcessing = true;
 	DOM.userInput.disabled = true;
 	DOM.sendButton.disabled = true;
+	DOM.sendButton.style.display = 'none';
+	DOM.stopButton.style.display = 'flex';
 	DOM.userInput.value = '';
 	DOM.userInput.style.height = 'auto';
+
+	// Create AbortController for this request
+	currentAbortController = new AbortController();
 
 	// Create conversation if none active
 	let conv = getActiveConversation();
@@ -539,13 +551,18 @@ async function sendMessage(messageText) {
 				const searchRes = await fetch('/api/search', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ query: message })
+					body: JSON.stringify({ query: message }),
+					signal: currentAbortController.signal
 				});
 				if (searchRes.ok) {
 					const searchData = await searchRes.json();
 					searchResults = searchData.formatted || '';
 				}
 			} catch (e) {
+				if (e.name === 'AbortError') {
+					console.log('Search aborted');
+					return;
+				}
 				console.error("Web search failed:", e);
 			}
 			isSearching = false;
@@ -554,6 +571,8 @@ async function sendMessage(messageText) {
 
 		const streamDiv = createStreamingMessage();
 		const contentEl = streamDiv.querySelector('.message-content');
+		const thinkingIndicator = streamDiv.querySelector('.thinking-indicator');
+		const thinkingTime = streamDiv.querySelector('.thinking-time');
 
 		// Build messages for API (include all history)
 		const apiMessages = conv.messages.map(m => ({ role: m.role, content: m.content }));
@@ -567,6 +586,7 @@ async function sendMessage(messageText) {
 				webSearch: webSearchEnabled,
 				searchResults: searchResults
 			}),
+			signal: currentAbortController.signal
 		});
 
 		if (!response.ok) throw new Error('Failed to get response');
@@ -577,9 +597,98 @@ async function sendMessage(messageText) {
 		let responseText = '';
 		let buffer = '';
 		let sawDone = false;
+		let isThinking = false;
+		let thinkingStartTime = null;
+		let thinkingInterval = null;
+		let fullText = ''; // Track full text including thinking
+		let isDeepSeek = DOM.modelSelect.value.includes('deepseek');
+		let hasStartedResponse = false;
+
+		// For DeepSeek models, show thinking indicator initially
+		if (isDeepSeek) {
+			console.log('[Thinking] DeepSeek model detected, showing initial thinking indicator');
+			isThinking = true;
+			thinkingStartTime = Date.now();
+			thinkingIndicator.style.display = 'flex';
+			thinkingInterval = setInterval(updateThinkingTime, 1000);
+		}
+
+		const updateThinkingTime = () => {
+			if (thinkingStartTime) {
+				const elapsed = Math.floor((Date.now() - thinkingStartTime) / 1000);
+				thinkingTime.textContent = `${elapsed}s`;
+			}
+		};
+
+		const extractResponse = (text) => {
+			// Remove <think>...</think> tags and their content
+			// Handle both complete and incomplete tags
+			let cleaned = text;
+			
+			// Log for debugging
+			if (text.includes('<think>') || text.includes('</think>')) {
+				console.log('[Thinking] Detected thinking tags in response');
+			}
+			
+			// Remove complete thinking blocks
+			cleaned = cleaned.replace(/<think>[\s\S]*?<\/think>/gi, '');
+			
+			// Check if we're currently in a thinking block
+			const thinkStart = cleaned.lastIndexOf('<think>');
+			const thinkEnd = cleaned.lastIndexOf('</think>');
+			
+			if (thinkStart > thinkEnd) {
+				// We're in an unclosed thinking block
+				console.log('[Thinking] Currently in thinking block');
+				cleaned = cleaned.substring(0, thinkStart);
+				return { content: cleaned.trim(), isThinking: true };
+			}
+			
+			return { content: cleaned.trim(), isThinking: false };
+		};
 
 		const flushContent = () => {
-			contentEl.innerHTML = renderMarkdown(responseText);
+			const { content, isThinking: thinking } = extractResponse(fullText);
+			
+			// For DeepSeek without explicit tags, hide thinking after first content
+			if (isDeepSeek && !hasStartedResponse && content.length > 0) {
+				console.log('[Thinking] First content received, hiding thinking indicator');
+				hasStartedResponse = true;
+				if (thinkingInterval) {
+					clearInterval(thinkingInterval);
+					thinkingInterval = null;
+				}
+				thinkingIndicator.style.display = 'none';
+				isThinking = false;
+			}
+			
+			// Show/hide thinking indicator based on tags (for models that support it)
+			if (thinking && !isThinking) {
+				console.log('[Thinking] Starting thinking indicator');
+				isThinking = true;
+				thinkingStartTime = Date.now();
+				thinkingIndicator.style.display = 'flex';
+				thinkingInterval = setInterval(updateThinkingTime, 1000);
+			} else if (!thinking && isThinking && !isDeepSeek) {
+				console.log('[Thinking] Stopping thinking indicator');
+				isThinking = false;
+				if (thinkingInterval) {
+					clearInterval(thinkingInterval);
+					thinkingInterval = null;
+				}
+				thinkingIndicator.style.display = 'none';
+			}
+			
+			// Update thinking time if still thinking
+			if (isThinking) {
+				updateThinkingTime();
+			}
+			
+			// Only show content outside thinking tags
+			responseText = content;
+			if (responseText) {
+				contentEl.innerHTML = renderMarkdown(responseText);
+			}
 			scrollToBottom();
 		};
 
@@ -599,7 +708,7 @@ async function sendMessage(messageText) {
 							content = jsonData.choices[0].delta.content;
 						}
 						if (content) {
-							responseText += content;
+							fullText += content;
 							flushContent();
 						}
 					} catch (e) {
@@ -628,7 +737,11 @@ async function sendMessage(messageText) {
 						content = jsonData.choices[0].delta.content;
 					}
 					if (content) {
-						responseText += content;
+						fullText += content;
+						// Log first few chunks to see format
+						if (fullText.length < 200) {
+							console.log('[Stream] Received:', content);
+						}
 						flushContent();
 					}
 				} catch (e) {
@@ -638,6 +751,13 @@ async function sendMessage(messageText) {
 
 			if (sawDone) break;
 		}
+
+		// Clean up thinking interval if still running
+		if (thinkingInterval) {
+			clearInterval(thinkingInterval);
+			thinkingInterval = null;
+		}
+		thinkingIndicator.style.display = 'none';
 
 		// Save assistant response
 		if (responseText.length > 0) {
@@ -659,12 +779,20 @@ async function sendMessage(messageText) {
 		}
 	} catch (error) {
 		console.error('Error:', error);
-		appendMessageElement('assistant', 'Sorry, there was an error processing your request. Please try again.');
+		if (error.name === 'AbortError') {
+			console.log('Request was aborted by user');
+			// Don't show error message for user-initiated stops
+		} else {
+			appendMessageElement('assistant', 'Sorry, there was an error processing your request. Please try again.');
+		}
 	} finally {
 		DOM.typingIndicator.classList.remove('visible');
 		isProcessing = false;
 		DOM.userInput.disabled = false;
 		DOM.sendButton.disabled = false;
+		DOM.sendButton.style.display = 'flex';
+		DOM.stopButton.style.display = 'none';
+		currentAbortController = null;
 		DOM.userInput.focus();
 		scrollToBottom();
 		renderConversationList();
@@ -792,6 +920,14 @@ DOM.userInput.addEventListener('keydown', (e) => {
 });
 
 DOM.sendButton.addEventListener('click', () => sendMessage());
+
+// Stop button
+DOM.stopButton.addEventListener('click', () => {
+	if (currentAbortController) {
+		currentAbortController.abort();
+		console.log('Stopping AI response...');
+	}
+});
 
 // Web Search Toggle
 if (DOM.webSearchBtn) {

@@ -20,17 +20,33 @@
 		"@cloudflare/vitest-pool-workers": "0.10.11",
 		"@cloudflare/workers-types": "^4.20250425.0",
 		"@types/node": "24.10.1",
+		"@vitejs/plugin-react": "^5.1.4",
+		"concurrently": "^9.2.1",
 		"typescript": "5.9.3",
+		"vite": "^7.3.1",
 		"vitest": "3.2.4",
-		"wrangler": "4.56.0"
+		"wrangler": "^4.69.0"
 	},
 	"private": true,
 	"scripts": {
+		"build": "vite build",
 		"cf-typegen": "wrangler types",
 		"check": "tsc --noEmit && wrangler deploy --dry-run",
 		"deploy": "wrangler deploy",
-		"dev": "wrangler dev",
-		"start": "wrangler dev",
+		"dev": "npm run dev:all",
+		"dev:all": "npx concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+		"dev:backend": "wrangler dev --port 8787 --ip 127.0.0.1",
+		"dev:frontend": "vite --port 3000",
+		"start": "npm run dev:all",
 		"test": "vitest"
+	},
+	"dependencies": {
+		"dompurify": "^3.2.4",
+		"firebase": "^12.10.0",
+		"highlight.js": "^11.11.1",
+		"marked": "^15.0.7",
+		"react": "^19.2.4",
+		"react-dom": "^19.2.4",
+		"react-router-dom": "^7.13.1"
 	}
 }
