@@ -24,7 +24,7 @@ export default function ChatLayout() {
 
 	// Get current user info
 	useEffect(() => {
-		const user = auth.currentUser;
+		const user = auth?.currentUser;
 		if (user) {
 			setCurrentUser({
 				displayName: user.displayName || user.email?.split('@')[0] || 'User',
