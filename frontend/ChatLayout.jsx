@@ -212,7 +212,7 @@ export default function ChatLayout() {
 			if (auth?.currentUser) {
 				try {
 					const res = await fetch('/api/history', {
-						headers: { 'Authorization': `Bearer ${auth.currentUser.uid}` }
+						headers: { 'Authorization': `Bearer ${auth?.currentUser?.uid}` }
 					});
 					if (res.ok) {
 						const data = await res.json();
@@ -273,7 +273,7 @@ export default function ChatLayout() {
 
 		const authHeaders = {};
 		if (auth?.currentUser) {
-			authHeaders['Authorization'] = `Bearer ${auth.currentUser.uid}`;
+			authHeaders['Authorization'] = `Bearer ${auth?.currentUser?.uid}`;
 		} else if (localStorage.getItem("gt_auth_token") === "mock") {
 			authHeaders['Authorization'] = `Bearer mock-user-123`;
 		}
